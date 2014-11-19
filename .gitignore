@@ -3,8 +3,10 @@
 #User/Machine Specific Visual Studio Files
 *.suo
 *.user
+**/*.sln.ide/**
 
 #Products of Builds
+*.nupkg
 *.dll
 *.exe
 *.pdb
