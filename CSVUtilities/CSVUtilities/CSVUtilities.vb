@@ -17,7 +17,7 @@ Namespace CSV
         Public Function NormalizeString(content As String, Optional delimiter As String = DEFAULT_DELIMITER) As String
             content = content.Replace("""", """""") 'Replace single quotes with double quotes
             If escapeRequired.IsMatch(content) Or content.Contains(delimiter) Then
-                content = """" & content & """" 'Surround message with quotes
+                content = String.Format("""{0}""", content) 'Surround message with quotes
             End If
             Return content
         End Function
