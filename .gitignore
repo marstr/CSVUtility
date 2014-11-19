@@ -1,0 +1,16 @@
+# All files that are included in this file are ignored.
+
+#User/Machine Specific Visual Studio Files
+*.suo
+*.user
+
+#Products of Builds
+*.dll
+*.exe
+*.pdb
+*.cache
+*.Cache
+*.resources
+*.FileListAbsolute.txt
+**/bin/**
+**/obj/**
