@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>1.1.141119.0</version>
+    <version>1.2.141212.0-dev</version>
     <title>$title$</title>
     <authors>Cloud Platform Tools Telemetry</authors>
     <owners>marstr</owners>
