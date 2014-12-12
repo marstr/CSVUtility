@@ -12,7 +12,15 @@ Namespace CSV
         End Property
         Private _delimiter As Char
 
+        Public ReadOnly Property Position As RasterCursor
+            Get
+                Return _postion
+            End Get
+        End Property
+        Private ReadOnly _postion As RasterCursor = New RasterCursor
+
 #Region "Constructors"
+        'Many of the constructors in this section are fairly redundant and only here in want of a better syntax to express this.
         Public Sub New(stream As Stream, Optional delimiter As Char = DEFAULT_DELIMITER)
             MyBase.New(stream)
             _delimiter = delimiter
@@ -90,7 +98,7 @@ Namespace CSV
             If rawEncounteredText.Length > 0 AndAlso Not encounteredEnd Then
                 rawEncounteredText.Remove(rawEncounteredText.Length - 1, 1)
             End If
-
+            Position.Increment()
             Return DenormalizeString(rawEncounteredText.ToString())
         End Function
 
@@ -101,6 +109,10 @@ Namespace CSV
         Public Function ReadTuple() As String()
             Dim rawText As String
             Dim quoteCount = 0
+
+            If EndOfStream Then
+                Return Nothing
+            End If
 
             'Combine all physical lines that are 
             Dim accumulator As New StringBuilder
@@ -134,6 +146,7 @@ Namespace CSV
             End While
 
             encountered.Add(rawText.Substring(tortoise))
+            Position.NextRow()
 
             Return encountered.ToArray
         End Function

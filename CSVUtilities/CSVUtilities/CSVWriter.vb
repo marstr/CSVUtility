@@ -11,7 +11,16 @@ Namespace CSV
         ''' <summary>
         ''' Stores the next position that should be written to.
         ''' </summary>
-        Private cursor As New RasterCursor
+        Public Property Position As RasterCursor
+            Get
+                Return _Position
+            End Get
+            Protected Set(value As RasterCursor)
+                _Position = value
+            End Set
+        End Property
+        Private _Position As New RasterCursor
+
 
         ''' <summary>
         ''' The character used to separate columns in a row.
@@ -44,15 +53,15 @@ Namespace CSV
         ''' </remarks>
         Protected Sub WriteHelper(value As String)
             Dim copy As String
-            If cursor.Column = 0 Then
+            If Position.Column = 0 Then
                 copy = value
             Else
                 copy = Delimiter & value
             End If
             MyBase.Write(copy)
             'Maintain cursor position
-            cursor += 1
-            If cursor.Column = 0 Then
+            Position += 1
+            If Position.Column = 0 Then
                 MyBase.WriteLine()
             End If
         End Sub
@@ -68,9 +77,9 @@ Namespace CSV
             Await Task.Run(Sub() WriteHelper(value))
         End Function
 
-        Protected Sub WriteTupleHelper(Of T)(cells() As T, Optional conversion As Func(Of T, String) = Nothing)
+        Protected Overridable Sub WriteTupleHelper(Of T)(cells() As T, Optional conversion As Func(Of T, String) = Nothing)
             conversion = If(conversion, Function(x) x.ToString)
-            If Not (cursor.Column = 0) Then
+            If Not (Position.Column = 0) Then
                 WriteLine()
             End If
             For Each cell In cells
@@ -80,7 +89,7 @@ Namespace CSV
 
         Protected Async Function WriteTupleHelperAsync(Of T)(cells() As T, Optional conversion As Func(Of T, String) = Nothing) As Task
             conversion = If(conversion, Function(x) x.ToString)
-            If Not (cursor.Column = 0) Then
+            If Not (Position.Column = 0) Then
                 Await WriteLineAsync()
             End If
             For Each cell In cells
@@ -309,7 +318,7 @@ Namespace CSV
 #Region "WriteLine Overloads"
         Public Overrides Sub WriteLine()
             MyBase.Write(NewLine)
-            cursor.NextRow()
+            Position.NextRow()
         End Sub
         Public Overrides Sub WriteLine(buffer() As Char)
             Dim builder = New StringBuilder

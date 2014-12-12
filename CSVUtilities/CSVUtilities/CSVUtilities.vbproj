@@ -66,6 +66,8 @@
     <Compile Include="CSVReader.vb" />
     <Compile Include="CSVUtilities.vb" />
     <Compile Include="CSVWriter.vb" />
+    <Compile Include="HeadedCSVReader.vb" />
+    <Compile Include="HeadedCSVWriter.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
