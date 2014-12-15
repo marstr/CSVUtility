@@ -51,7 +51,4 @@ Public Class HeadedCSVWriterTests
             Next
         End Using
     End Sub
-
-
-
 End Class

@@ -93,7 +93,7 @@ Namespace CSV
 
             Dim rawTuple = New LinkedList(Of String)(ReadTuple())
             If Not Header.Length = rawTuple.Count Then
-
+                Return False
             End If
 
             For Each column In Header
@@ -101,7 +101,7 @@ Namespace CSV
                 rawTuple.RemoveFirst()
             Next
 
-            Return False
+            Return True
         End Function
     End Class
 End Namespace
