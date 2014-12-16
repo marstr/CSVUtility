@@ -37,6 +37,37 @@ Public Class HeadedCSVReaderTests
     End Sub
 
     <TestMethod()>
+    Public Sub ReadBeforeHeaderCheck()
+        Using memStream As New MemoryStream()
+            Dim writer = New StreamWriter(memStream)
+            writer.Write("a,b,c
+1,2,3")
+            Dim expected = New Dictionary(Of String, String)
+            expected.Add("a", "1")
+            expected.Add("b", "2")
+            expected.Add("c", "3")
+
+            writer.Flush()
+            memStream.Seek(0L, SeekOrigin.Begin)
+            Dim reader = New HeadedCSVReader(memStream)
+
+            Dim tuple = New Dictionary(Of String, String)
+            reader.ReadTuple(tuple)
+
+            Assert.AreEqual(2UI, reader.Position.Row)
+
+            For Each column In expected.Keys
+                Assert.IsTrue(reader.Header.Contains(column))
+                Assert.AreEqual(expected(column), tuple(column))
+            Next
+
+            Assert.IsFalse(reader.ReadTuple(tuple))
+
+            Assert.AreEqual(3, reader.Header.Length)
+        End Using
+    End Sub
+
+    <TestMethod()>
     Public Sub NoDataAfterHeader()
         Using memStream As New MemoryStream()
             Dim writer = New StreamWriter(memStream)
