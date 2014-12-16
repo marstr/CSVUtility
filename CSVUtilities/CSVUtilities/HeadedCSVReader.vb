@@ -90,9 +90,9 @@ Namespace CSV
             If (Not Position.Column = 0) OrElse EndOfStream Then
                 Return False
             End If
-
+            Dim headerCount = Header.Length
             Dim rawTuple = New LinkedList(Of String)(ReadTuple())
-            If Not Header.Length = rawTuple.Count Then
+            If Not headerCount = rawTuple.Count Then
                 Return False
             End If
 
