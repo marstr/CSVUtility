@@ -6,9 +6,11 @@ Namespace CSV
         Inherits CSVReader
 
         ''' <summary>
-        ''' The set of values that will define the first row of a CSV file.
+        ''' The set of values that will map a name to a column.
         ''' </summary>
-        ''' <remarks>These values will also </remarks>
+        ''' <remarks>
+        ''' If this value was not set by a constructor, The first row of the file will be used.
+        ''' </remarks>
         Public ReadOnly Property Header As String()
             Get
                 If _Header Is Nothing Then
@@ -25,54 +27,139 @@ Namespace CSV
 
 #Region "Constructors"
         'Many of the constructors in this section are fairly redundant and only here in want of a better syntax to express this.
+
+        ''' <summary>
+        ''' Instantiates a new HeadedCSVReader.
+        ''' </summary>
+        ''' <param name="stream">The stream to be read.</param>
+        ''' <param name="delimiter">The character that will be used to separate values on a single line.</param>
+        ''' <param name="header">The set of values that will map a name to a column.<seealso cref="Header"/></param>
         Public Sub New(stream As Stream, Optional delimiter As Char = DEFAULT_DELIMITER, Optional header As String() = Nothing)
             MyBase.New(stream, delimiter)
             _Header = header
         End Sub
 
+        ''' <summary>
+        ''' Instantiates a new HeadedCSVReader.
+        ''' </summary>
+        ''' <param name="path">The full path to the file to be read.</param>
+        ''' <param name="delimiter">The character that will be used to separate values on a single line.</param>
+        ''' <param name="header">The set of values that will map a name to a column.<seealso cref="Header"/></param>
         Public Sub New(path As String, Optional delimiter As Char = DEFAULT_DELIMITER, Optional header As String() = Nothing)
             MyBase.New(path, delimiter)
             _Header = header
         End Sub
 
+        ''' <summary>
+        ''' Instantiates a new HeadedCSVReader.
+        ''' </summary>
+        ''' <param name="stream">The stream to be read.</param>
+        ''' <param name="detectEncodingFromByteOrderMarks">Indicates whether to look for byte order marks at the beginning of the file.</param>
+        ''' <param name="delimiter">The character that will be used to separate values on a single line.</param>
+        ''' <param name="header">The set of values that will map a name to a column.<seealso cref="Header"/></param>
         Public Sub New(stream As Stream, detectEncodingFromByteOrderMarks As Boolean, Optional delimiter As Char = DEFAULT_DELIMITER, Optional header As String() = Nothing)
             MyBase.New(stream, detectEncodingFromByteOrderMarks, delimiter)
             _Header = header
         End Sub
 
+        ''' <summary>
+        ''' Instantiates a new HeadedCSVReader.
+        ''' </summary>
+        ''' <param name="stream">The stream to be read.</param>
+        ''' <param name="delimiter">The character that will be used to separate values on a single line.</param>
+        ''' <param name="header">The set of values that will map a name to a column.<seealso cref="Header"/></param>
         Public Sub New(stream As Stream, encoding As Encoding, Optional delimiter As Char = DEFAULT_DELIMITER, Optional header As String() = Nothing)
             MyBase.New(stream, encoding, delimiter)
             _Header = header
         End Sub
 
+        ''' <summary>
+        ''' Instantiates a new HeadedCSVReader.
+        ''' </summary>
+        ''' <param name="path">The full path to the file to be read.</param>
+        ''' <param name="detectEncodingFromByteOrderMarks">Indicates whether to look for byte order marks at the beginning of the file.</param>
+        ''' <param name="delimiter">The character that will be used to separate values on a single line.</param>
+        ''' <param name="header">The set of values that will map a name to a column.<seealso cref="Header"/></param>
         Public Sub New(path As String, detectEncodingFromByteOrderMarks As Boolean, Optional delimiter As Char = DEFAULT_DELIMITER, Optional header As String() = Nothing)
             MyBase.New(path, detectEncodingFromByteOrderMarks, delimiter)
             _Header = header
         End Sub
 
+        ''' <summary>
+        ''' Instantiates a new HeadedCSVReader.
+        ''' </summary>
+        ''' <param name="path">The full path to the file to be read.</param>
+        ''' <param name="encoding">The character encoding to be used.</param>
+        ''' <param name="delimiter">The character that will be used to separate values on a single line.</param>
+        ''' <param name="header">The set of values that will map a name to a column.<seealso cref="Header"/></param>
         Public Sub New(path As String, encoding As Encoding, Optional delimiter As Char = DEFAULT_DELIMITER, Optional header As String() = Nothing)
             MyBase.New(path, encoding, delimiter)
             _Header = header
         End Sub
+
+        ''' <summary>
+        ''' Instantiates a new HeadedCSVReader.
+        ''' </summary>
+        ''' <param name="stream">The stream to be read.</param>
+        ''' <param name="encoding">The character encoding to be used.</param>
+        ''' <param name="detectEncodingFromByteOrderMarks">Indicates whether to look for byte order marks at the beginning of the file.</param>
+        ''' <param name="delimiter">The character that will be used to separate values on a single line.</param>
+        ''' <param name="header">The set of values that will map a name to a column.<seealso cref="Header"/></param>
         Public Sub New(stream As Stream, encoding As Encoding, detectEncodingFromByteOrderMarks As Boolean, Optional delimiter As Char = DEFAULT_DELIMITER, Optional header As String() = Nothing)
             MyBase.New(stream, encoding, detectEncodingFromByteOrderMarks, delimiter)
             _Header = header
         End Sub
 
+        ''' <summary>
+        ''' Instantiates a new HeadedCSVReader.
+        ''' </summary>
+        ''' <param name="path">The full path to the file to be read.</param>
+        ''' <param name="encoding">The character encoding to be used.</param>
+        ''' <param name="detectEncodingFromByteOrderMarks">Indicates whether to look for byte order marks at the beginning of the file.</param>
+        ''' <param name="delimiter">The character that will be used to separate values on a single line.</param>
+        ''' <param name="header">The set of values that will map a name to a column.<seealso cref="Header"/></param>
         Public Sub New(path As String, encoding As Encoding, detectEncodingFromByteOrderMarks As Boolean, Optional delimiter As Char = DEFAULT_DELIMITER, Optional header As String() = Nothing)
             MyBase.New(path, encoding, detectEncodingFromByteOrderMarks, delimiter)
         End Sub
 
+        ''' <summary>
+        ''' Instantiates a new HeadedCSVReader.
+        ''' </summary>
+        ''' <param name="stream">The stream to be read.</param>
+        ''' <param name="encoding">The character encoding to be used.</param>
+        ''' <param name="detectEncodingFromByteOrderMarks">Indicates whether to look for byte order marks at the beginning of the file.</param>
+        ''' <param name="bufferSize">The minimum buffer size.</param>
+        ''' <param name="delimiter">The character that will be used to separate values on a single line.</param>
+        ''' <param name="header">The set of values that will map a name to a column.<seealso cref="Header"/></param>
         Public Sub New(stream As Stream, encoding As Encoding, detectEncodingFromByteOrderMarks As Boolean, bufferSize As Integer, Optional delimiter As Char = DEFAULT_DELIMITER, Optional header As String() = Nothing)
             MyBase.New(stream, encoding, detectEncodingFromByteOrderMarks, bufferSize, delimiter)
             _Header = header
         End Sub
 
+        ''' <summary>
+        ''' Instantiates a new HeadedCSVReader.
+        ''' </summary>
+        ''' <param name="path">The full path to the file to be read.</param>
+        ''' <param name="encoding">The character encoding to be used.</param>
+        ''' <param name="detectEncodingFromByteOrderMarks">Indicates whether to look for byte order marks at the beginning of the file.</param>
+        ''' <param name="bufferSize">The minimum buffer size.</param>
+        ''' <param name="delimiter">The character that will be used to separate values on a single line.</param>
+        ''' <param name="header">The set of values that will map a name to a column.<seealso cref="Header"/></param>
         Public Sub New(path As String, encoding As Encoding, detectEncodingFromByteOrderMarks As Boolean, bufferSize As Integer, Optional delimiter As Char = DEFAULT_DELIMITER, Optional header As String() = Nothing)
             MyBase.New(path, encoding, detectEncodingFromByteOrderMarks, bufferSize, delimiter)
             _Header = header
         End Sub
 
+        ''' <summary>
+        ''' Instantiates a new HeadedCSVReader.
+        ''' </summary>
+        ''' <param name="stream">The stream to be read.</param>
+        ''' <param name="encoding">The character encoding to be used.</param>
+        ''' <param name="detectEncodingFromByteOrderMarks">Indicates whether to look for byte order marks at the beginning of the file.</param>
+        ''' <param name="bufferSize">The minimum buffer size.</param>
+        ''' <param name="delimiter">The character that will be used to separate values on a single line.</param>
+        ''' <param name="leaveOpen"><code>true</code> to leave the stream open afte the <see cref="HeadedCSVReader"/> object is disposed; otherwise, <code>false</code>.</param>
+        ''' <param name="header">The set of values that will map a name to a column.<seealso cref="Header"/></param>
         Public Sub New(stream As Stream, encoding As Encoding, detectEncodingFromByteOrderMarks As Boolean, bufferSize As Integer, leaveOpen As Boolean, Optional delimiter As Char = DEFAULT_DELIMITER, Optional header As String() = Nothing)
             MyBase.New(stream, encoding, detectEncodingFromByteOrderMarks, bufferSize, leaveOpen, delimiter)
             _Header = header
@@ -83,7 +170,7 @@ Namespace CSV
         ''' Fetches the contents of a single row of a CSV file and associates it with the column name that it belonged to.
         ''' </summary>
         ''' <param name="output">A dictionary that will contain the contents of a row after the method has finished executing.</param>
-        ''' <returns>True if the operation was successful and </returns>
+        ''' <returns>True if the operation was successful.</returns>
         Public Overloads Function ReadTuple(ByRef output As Dictionary(Of String, String)) As Boolean
             If output Is Nothing Then
                 output = New Dictionary(Of String, String)
