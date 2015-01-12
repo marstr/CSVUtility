@@ -6,10 +6,14 @@ Namespace CSV
     ''' </summary>
     Public Module CSVUtilities
 
+        ''' <summary>
+        ''' The character that should be considered the default delimiter for CSV files.
+        ''' </summary>
+        ''' <remarks>Intuitively, the default is a comma. However, it should be noted that in modern usage, CSV stands for "Character Separated Values"</remarks>
         Public Const DEFAULT_DELIMITER = ","c
 
         ''' <summary>
-        ''' Adds a characters to a string, so that it can be written safely to a CSV file.
+        ''' Adds escape characters to a string, so that it can be written safely to a CSV file.
         ''' </summary>
         ''' <param name="content">The message to be escaped.</param>
         ''' <param name="delimiter">The character that is used to terminate cells.</param>

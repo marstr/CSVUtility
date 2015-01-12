@@ -5,6 +5,10 @@ Namespace CSV
     Public Class HeadedCSVReader
         Inherits CSVReader
 
+        ''' <summary>
+        ''' The set of values that will define the first row of a CSV file.
+        ''' </summary>
+        ''' <remarks>These values will also </remarks>
         Public ReadOnly Property Header As String()
             Get
                 If _Header Is Nothing Then
