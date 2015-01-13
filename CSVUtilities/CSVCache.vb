@@ -402,6 +402,10 @@
             End If
         End Sub
 
+        ''' <summary>
+        ''' Shrinks a particular row to fit the current values, but not twice more.
+        ''' </summary>
+        ''' <param name="row">The 0-based row to be shrunk.</param>
         Private Sub ShrinkRow(row As UInteger)
             If row >= Rows Then
                 Throw New ArgumentOutOfRangeException()
