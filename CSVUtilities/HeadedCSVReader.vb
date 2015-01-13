@@ -183,7 +183,12 @@ Namespace CSV
             End If
             Dim headerCount = Header.Length
             Dim rawTuple = New LinkedList(Of String)(ReadTuple())
-            If Not headerCount = rawTuple.Count Then
+
+            While rawTuple.Count < headerCount
+                rawTuple.AddLast(String.Empty)
+            End While
+
+            If Not rawTuple.Count = headerCount Then
                 Return False
             End If
 

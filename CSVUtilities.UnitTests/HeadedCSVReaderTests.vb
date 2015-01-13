@@ -124,4 +124,27 @@ Public Class HeadedCSVReaderTests
 #Enable Warning BC42030
         End Using
     End Sub
+
+    <TestMethod()>
+    Public Sub ReadLongLine()
+        Using memStream As New MemoryStream()
+            Dim writer = New CSVWriter(memStream)
+            writer.WriteTuple({"A", "B", "C"})
+            writer.WriteTuple({"1", "2", "3"})
+            writer.WriteTuple({"4", "5", "6", "7"})
+            writer.WriteTuple({"8", "9", "10"})
+            writer.Flush()
+            memStream.Seek(0L, SeekOrigin.Begin)
+
+            Dim reader = New HeadedCSVReader(memStream)
+            Assert.AreEqual(3, reader.Header.Length)
+            Dim tuple As IDictionary(Of String, String)
+
+#Disable Warning BC42030
+            Assert.IsTrue(reader.ReadTuple(tuple))
+            Assert.IsFalse(reader.ReadTuple(tuple))
+            Assert.IsTrue(reader.ReadTuple(tuple))
+#Enable Warning BC42030
+        End Using
+    End Sub
 End Class
