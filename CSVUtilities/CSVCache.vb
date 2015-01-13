@@ -1,6 +1,6 @@
 ﻿Namespace CSV
     ''' <summary>
-    ''' An easy way to interact with small sets of data that are or will become stored in a CSV file.    ''' 
+    ''' An easy way to interact with small sets of data that are or will become stored in a CSV file.
     ''' </summary>
     ''' <remarks>
     ''' This class is not an alternative to <seealso cref="CSVWriter"/> or <seealso cref="CSVReader"/>, if data needs to be treated as if it were a stream do not use <see cref="CSVCache"/>.
@@ -16,7 +16,6 @@
         ''' <summary>
         ''' The number of rows that are currently represented in the cache.
         ''' </summary>
-        ''' <returns></returns>
         Public Property Rows As UInteger
             Get
                 Return _observedRows
@@ -188,11 +187,24 @@
 
         ''' <summary>
         ''' Deletes a cell and shifts all values behind it on the same row of it to the left one column.
-        ''' When the last cell in a row is deleted, the row is deleted.
+        ''' When this method is called on an empty Row, that row is deleted and all following rows are moved up.
         ''' </summary>
         ''' <param name="row">The vertical position of the cell to be removed.</param>
         ''' <param name="col">The horizontal position of the cell to be removed.</param>
         Public Sub RemoveCell(row As UInteger, col As UInteger)
+            If row > Rows Then 'Separating this from the first clause prevents an ArgumentOutOfRangeException
+                Exit Sub
+            ElseIf col = 0 AndAlso m_columns(row) = 0 Then
+                RemoveRow(row)
+            ElseIf col >= m_columns(row) Then
+                Exit Sub
+            Else
+                For i = col To m_columns(row) - 2
+                    m_cache(row)(i) = m_cache(row)(i + 1)
+                Next
+                m_columns(row) -= 1
+                ShrinkRow(row)
+            End If
         End Sub
 
         ''' <summary>
@@ -201,12 +213,12 @@
         ''' <param name="index">The location of the new row.</param>
         ''' <param name="values">The values to insert at the given location.</param>
         Public Sub InsertRow(index As UInteger, values As IEnumerable(Of String))
-            Dim numValues As UInteger = CType(values.Count(), UInteger)
+            Dim numValues = values.Count()
             Dim i As UInteger
             If index > Rows Then
                 Throw New ArgumentOutOfRangeException()
             ElseIf index = Rows Then
-                GrowCache(Rows, numValues - 1)
+                GrowCache(Rows, Math.Max(numValues - 1, 0))
             Else
                 GrowCache(Rows, 0)
                 i = Rows
@@ -391,7 +403,7 @@
         End Sub
 
         Private Sub ShrinkRow(row As UInteger)
-            If row <= Rows Then
+            If row >= Rows Then
                 Throw New ArgumentOutOfRangeException()
             End If
             If m_columns(row) < m_cache(row).Length / 2 Then

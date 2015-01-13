@@ -224,7 +224,126 @@ Public Class CSVCacheTests
     End Sub
 
     <TestMethod, Timeout(DEFAULT_TIMEOUT)>
-    Public Sub ForceCacheColumnGrow()
-
+    Public Sub InsertEmptyRow_Manual()
+        Dim subject = New CSVCache(SLUFF_FILE)
+        Assert.AreEqual(0UI, subject.Rows)
+        subject.InsertRow(0, {})
+        Assert.AreEqual(1UI, subject.Rows)
+        Assert.AreEqual(0UI, subject.ColumnCount(0))
     End Sub
+
+    <TestMethod, Timeout(DEFAULT_TIMEOUT)>
+    Public Sub InsertEmptyRow_Overload()
+        Dim subject = New CSVCache(SLUFF_FILE)
+        Assert.AreEqual(0UI, subject.Rows)
+        subject.InsertRow(0)
+        Assert.AreEqual(1UI, subject.Rows)
+        Assert.AreEqual(0UI, subject.ColumnCount(0))
+    End Sub
+
+    <TestMethod, Timeout(DEFAULT_TIMEOUT)>
+    Public Sub ForceCacheRowGrow()
+        Dim subject = New CSVCache(SLUFF_FILE)
+
+        Assert.AreEqual(0UI, subject.Rows)
+        subject.AppendRow({"A", "B", "C"})
+        Assert.AreEqual(1UI, subject.Rows)
+        Assert.AreEqual(3UI, subject.ColumnCount(0))
+        For i = 3 To 50
+            subject.SetCell(0, i, String.Format("{0}", Char.ConvertFromUtf32(i + Char.ConvertToUtf32("A", 0))))
+        Next
+    End Sub
+
+    <TestMethod, Timeout(DEFAULT_TIMEOUT)>
+    Public Sub RemoveCell_Basic()
+        Dim subject = New CSVCache(SLUFF_FILE)
+        Dim original = {"A", "B", "C", "D", "E"}
+        Dim expected = {"A", "B", "D", "E"}
+        subject.SetRow(0, original)
+        Assert.AreEqual(1UI, subject.Rows)
+        Assert.AreEqual(Of UInteger)(original.Length, subject.ColumnCount(0))
+        For i = 0 To original.Length - 1
+            Assert.AreEqual(original(i), subject.ReadCell(0, i))
+        Next
+        subject.RemoveCell(0, 2)
+        Assert.AreEqual(1UI, subject.Rows)
+        Assert.AreEqual(Of UInteger)(expected.Length, subject.ColumnCount(0))
+        For i = 0 To expected.Length - 1
+            Assert.AreEqual(expected(i), subject.ReadCell(0, i))
+        Next
+    End Sub
+
+    <TestMethod, Timeout(DEFAULT_TIMEOUT)>
+    Public Sub RemoveCell_First()
+        Dim subject = New CSVCache(SLUFF_FILE)
+        Dim original = {"A", "B", "C", "D", "E"}
+        Dim expected = {"B", "C", "D", "E"}
+        subject.SetRow(0, original)
+        Assert.AreEqual(1UI, subject.Rows)
+        Assert.AreEqual(Of UInteger)(original.Length, subject.ColumnCount(0))
+        For i = 0 To original.Length - 1
+            Assert.AreEqual(original(i), subject.ReadCell(0, i))
+        Next
+        subject.RemoveCell(0, 0)
+        Assert.AreEqual(1UI, subject.Rows)
+        Assert.AreEqual(Of UInteger)(expected.Length, subject.ColumnCount(0))
+        For i = 0 To expected.Length - 1
+            Assert.AreEqual(expected(i), subject.ReadCell(0, i))
+        Next
+    End Sub
+
+    <TestMethod, Timeout(DEFAULT_TIMEOUT)>
+    Public Sub RemoveCell_Last()
+        Dim subject = New CSVCache(SLUFF_FILE)
+        Dim original = {"A", "B", "C", "D", "E"}
+        Dim expected = {"A", "B", "C", "D"}
+        subject.SetRow(0, original)
+        Assert.AreEqual(1UI, subject.Rows)
+        Assert.AreEqual(Of UInteger)(original.Length, subject.ColumnCount(0))
+        For i = 0 To original.Length - 1
+            Assert.AreEqual(original(i), subject.ReadCell(0, i))
+        Next
+        subject.RemoveCell(0, 4)
+        Assert.AreEqual(1UI, subject.Rows)
+        Assert.AreEqual(Of UInteger)(expected.Length, subject.ColumnCount(0))
+        For i = 0 To expected.Length - 1
+            Assert.AreEqual(expected(i), subject.ReadCell(0, i))
+        Next
+    End Sub
+
+    <TestMethod, Timeout(DEFAULT_TIMEOUT)>
+    Public Sub RemoveCell_NextToLast()
+        Dim subject = New CSVCache(SLUFF_FILE)
+        Dim original = {"A", "B", "C", "D", "E"}
+        Dim expected = {"A", "B", "C", "E"}
+        subject.SetRow(0, original)
+        Assert.AreEqual(1UI, subject.Rows)
+        Assert.AreEqual(Of UInteger)(original.Length, subject.ColumnCount(0))
+        For i = 0 To original.Length - 1
+            Assert.AreEqual(original(i), subject.ReadCell(0, i))
+        Next
+        subject.RemoveCell(0, 3)
+        Assert.AreEqual(1UI, subject.Rows)
+        Assert.AreEqual(Of UInteger)(expected.Length, subject.ColumnCount(0))
+        For i = 0 To expected.Length - 1
+            Assert.AreEqual(expected(i), subject.ReadCell(0, i))
+        Next
+    End Sub
+
+    <TestMethod, Timeout(DEFAULT_TIMEOUT)>
+    Public Sub RemoveCell_EmptyRow()
+        Dim subject = New CSVCache(SLUFF_FILE)
+        subject.SetRow(0, {"A", "B", "C"})
+        subject.SetRow(1, {})
+        subject.SetRow(2, {"G", "H", "I"})
+        Assert.AreEqual(3UI, subject.Rows)
+        Assert.AreEqual(3UI, subject.ColumnCount(0))
+        Assert.AreEqual(0UI, subject.ColumnCount(1))
+        Assert.AreEqual(3UI, subject.ColumnCount(2))
+        subject.RemoveCell(1, 0)
+        Assert.AreEqual(2UI, subject.Rows)
+        Assert.AreEqual(3UI, subject.ColumnCount(0))
+        Assert.AreEqual(3UI, subject.ColumnCount(1))
+    End Sub
+
 End Class
