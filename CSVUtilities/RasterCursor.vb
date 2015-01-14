@@ -118,11 +118,23 @@ Public Class RasterCursor
         End Operator
 
         Public Shared Operator <(ByVal leftSide As Position, ByVal rightSide As Position)
-            Throw New NotImplementedException
+            If leftSide.Row < rightSide.Row Then
+                Return True
+            ElseIf leftSide.Row > rightSide.Row Then
+                Return False
+            Else
+                Return leftSide.Column < rightSide.Column
+            End If
         End Operator
 
         Public Shared Operator >(ByVal leftSide As Position, ByVal rightSide As Position)
-            Throw New NotImplementedException
+            If leftSide.Row > rightSide.Row Then
+                Return True
+            ElseIf leftSide.Row < rightSide.Row Then
+                Return False
+            Else
+                Return leftSide.Column > rightSide.Column
+            End If
         End Operator
     End Structure
 End Class
