@@ -5,13 +5,15 @@ Imports Utilities.CSV
 
 <TestClass()> Public Class CSVUtilityTests
 
+#If DEBUG Then
+    Private Const DEFAULT_TIMEOUT = TestTimeout.Infinite
+#Else
     Private Const DEFAULT_TIMEOUT = 2000
+#End If
 
-#Region "String Normalization & Denormalization"
-
-    Private Shared Sub CheckNormalization(normalized As String, denormalized As String)
+    Private Shared Sub CheckNormalization(normalized As String, denormalized As String, Optional delimiter As Char = DEFAULT_DELIMITER)
         Assert.AreEqual(expected:=normalized,
-                        actual:=NormalizeString(denormalized),
+                        actual:=NormalizeString(denormalized, delimiter),
                         message:="Normalizing Broken")
 
         Assert.AreEqual(expected:=denormalized,
@@ -19,11 +21,11 @@ Imports Utilities.CSV
                         message:="Denormalizing Broken")
 
         Assert.AreEqual(expected:=normalized,
-                        actual:=NormalizeString(DenormalizeString(normalized)),
+                        actual:=NormalizeString(DenormalizeString(normalized), delimiter),
                         message:="Roundtripping Starting from Normalized Broken")
 
         Assert.AreEqual(expected:=denormalized,
-                        actual:=DenormalizeString(NormalizeString(denormalized)),
+                        actual:=DenormalizeString(NormalizeString(denormalized, delimiter)),
                         message:="Roundtripping Starting from Denormalized Broken")
     End Sub
 
@@ -36,31 +38,31 @@ Imports Utilities.CSV
     <TestMethod()>
     <Timeout(DEFAULT_TIMEOUT)>
     Public Sub CenterDelimitedStringNormalization()
-        CheckNormalization("""a,b""", "a,b")
+        CheckNormalization("""a" & DEFAULT_DELIMITER & "b""", "a" & DEFAULT_DELIMITER & "b")
     End Sub
 
     <TestMethod()>
     <Timeout(DEFAULT_TIMEOUT)>
     Public Sub EndDelimitedStringNormalization()
-        CheckNormalization("""ab,""", "ab,")
+        CheckNormalization("""ab" & DEFAULT_DELIMITER & """", "ab" & DEFAULT_DELIMITER)
     End Sub
 
     <TestMethod()>
     <Timeout(DEFAULT_TIMEOUT)>
     Public Sub StartDelimitedStringNormalization()
-        CheckNormalization(""",ab""", ",ab")
+        CheckNormalization("""" & DEFAULT_DELIMITER & "ab""", DEFAULT_DELIMITER & "ab")
     End Sub
 
     <TestMethod()>
     <Timeout(DEFAULT_TIMEOUT)>
     Public Sub AdjacentDelimitersStringNormalization()
-        CheckNormalization("""a,,b""", "a,,b")
+        CheckNormalization("""a" & DEFAULT_DELIMITER & DEFAULT_DELIMITER & "b""", "a" & DEFAULT_DELIMITER & DEFAULT_DELIMITER & "b")
     End Sub
 
     <TestMethod()>
     <Timeout(DEFAULT_TIMEOUT)>
     Public Sub MultipleDelimitersStringNormalization()
-        CheckNormalization("""a,b,c""", "a,b,c")
+        CheckNormalization("""a" & DEFAULT_DELIMITER & "b" & DEFAULT_DELIMITER & "c""", "a" & DEFAULT_DELIMITER & "b" & DEFAULT_DELIMITER & "c")
     End Sub
 
     <TestMethod()>
@@ -97,41 +99,21 @@ Imports Utilities.CSV
         CheckNormalization("""a" & vbCrLf & "b""", "a" & vbCrLf & "b")
     End Sub
 
+#Region "Non-Default Delimiter"
+    <TestMethod, Timeout(DEFAULT_TIMEOUT)>
+    Public Sub NonDefaultDelimiter_Basic()
+        CheckNormalization("""a;b""", "a;b", ";"c)
+    End Sub
+
+    <TestMethod, Timeout(DEFAULT_TIMEOUT)>
+    Public Sub NonDefaultDelimiter_ValueIncludesDefault()
+        Dim subject = String.Format("a{0}b", DEFAULT_DELIMITER)
+        CheckNormalization(subject, subject, ";"c)
+    End Sub
+
+    <TestMethod, Timeout(DEFAULT_TIMEOUT)>
+    Public Sub NonDefaultDelimiter_Whitespace()
+        CheckNormalization("""a" & vbTab & "b""", "a" & vbTab & "b", vbTab)
+    End Sub
 #End Region
-
-    '#Region "Read/Write Operations"
-    '    Shared Sub New()
-
-    '    End Sub
-
-    '    Private Shared simpleFileSource = <source>a,b,c
-    'd,e,f</source>.Value
-
-    '    Private Shared Function GetSimpleFile() As CachedCSVFile
-    '        Dim tempLocation = Path.GetTempFileName
-    '        File.WriteAllText(tempLocation, <source>a,b,c
-    'd,e,f</source>.Value)
-    '        Return New CachedCSVFile(tempLocation)
-    '    End Function
-
-    '    <TestMethod()> Public Sub BasicRead()
-    '        Dim csv = GetSimpleFile()
-    '        Assert.AreEqual("a", csv.Read(0, 0))
-    '        Assert.AreEqual("b", csv.Read(0, 1))
-    '        Assert.AreEqual("c", csv.Read(0, 2))
-    '        Assert.AreEqual("d", csv.Read(1, 0))
-    '        Assert.AreEqual("e", csv.Read(1, 1))
-    '        Assert.AreEqual("f", csv.Read(1, 2))
-    '    End Sub
-
-    '    <TestMethod()> Public Sub BasicColumnCount()
-    '        Dim csv = GetSimpleFile()
-    '        Assert.AreEqual(3, csv.Columns)
-    '    End Sub
-
-    '    <TestMethod()> Public Sub BasicRowCount()
-    '        Dim csv = GetSimpleFile()
-    '        Assert.AreEqual(2, csv.Rows)
-    '    End Sub
-    '#End Region
 End Class

@@ -20,12 +20,12 @@ Namespace CSV
         ''' <returns>A safe string</returns>
         Public Function NormalizeString(content As String, Optional delimiter As String = DEFAULT_DELIMITER) As String
             content = content.Replace("""", """""") 'Replace single quotes with double quotes
-            If escapeRequired.IsMatch(content) Or content.Contains(delimiter) Then
+            If escapeRequired.IsMatch(content) OrElse content.Contains(delimiter) Then
                 content = String.Format("""{0}""", content) 'Surround message with quotes
             End If
             Return content
         End Function
-        Private ReadOnly escapeRequired As New Regex("(?(\r\f)\r\f|[\""\,\n])")
+        Private ReadOnly escapeRequired As New Regex("(?(\r\f)\r\f|[\""\n])", RegexOptions.Compiled)
 
         ''' <summary>
         ''' Removes any characters from a string that were added to make it safe to be written to a CSV file.
