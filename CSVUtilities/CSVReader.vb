@@ -189,6 +189,14 @@ Namespace CSV
         End Function
 
         ''' <summary>
+        ''' Retrieves the contents of the next unread cell.
+        ''' </summary>
+        ''' <returns>The contents of the next cell available in the stream.</returns>
+        Public Async Function ReadCellAsync() As Task(Of String)
+            Return Await Task.Run(AddressOf ReadCell)
+        End Function
+
+        ''' <summary>
         ''' Retrieves each entry on an entire line of a CSV file.
         ''' </summary>
         ''' <returns>Each of the cells that existed in a logical line of a CSV file.</returns>
@@ -235,6 +243,14 @@ Namespace CSV
             Position.NextRow()
 
             Return encountered.ToArray
+        End Function
+
+        ''' <summary>
+        ''' Retrieves each entry on an entire line of a CSV file.
+        ''' </summary>
+        ''' <returns>Each of the cells that existed in a logical line of a CSV file.</returns>
+        Public Async Function ReadTupleAsync() As Task(Of String())
+            Return Await Task.Run(AddressOf ReadTuple)
         End Function
 
         ''' <summary>
