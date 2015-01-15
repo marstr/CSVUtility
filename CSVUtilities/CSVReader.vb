@@ -165,11 +165,13 @@ Namespace CSV
         ''' Retrieves the contents of the next unread cell.
         ''' </summary>
         ''' <returns>The contents of the next cell available in the stream.</returns>
+        ''' <exception cref="InvalidDataException">Thrown when invalid CSV data is encountered, such as unescaped quotes.</exception>
         Public Function ReadCell() As String
             Dim quoteCount = 0
             Dim rawEncounteredText As New StringBuilder
             Dim latest As Char
             Dim encounteredEnd = False
+
             Do
                 If EndOfStream Then
                     encounteredEnd = True
@@ -181,8 +183,23 @@ Namespace CSV
                     quoteCount += 1
                 End If
             Loop While Not ((latest = Delimiter OrElse latest = ControlChars.Cr OrElse latest = ControlChars.Lf) AndAlso (quoteCount Mod 2 = 0))
-            If rawEncounteredText.Length > 0 AndAlso Not encounteredEnd Then
-                rawEncounteredText.Remove(rawEncounteredText.Length - 1, 1)
+
+            If rawEncounteredText.Length > 0 Then
+                Dim lastPosition As Integer = rawEncounteredText.Length - 1
+                If Not encounteredEnd Then
+                    rawEncounteredText.Remove(lastPosition, 1)
+                    lastPosition -= 1
+                End If
+
+                'After shortening the rawText, we must check the length again before deciding if it is valid
+                If rawEncounteredText.Length > 0 Then
+                    Dim containsQuotes = quoteCount > 0
+                    Dim allQuotesDoubled = quoteCount Mod 2 = 0
+                    Dim isEscaped = rawEncounteredText.Chars(0) = """"c AndAlso rawEncounteredText.Chars(lastPosition) = """"c
+                    If containsQuotes AndAlso (Not isEscaped OrElse Not allQuotesDoubled) Then
+                        Throw New InvalidDataException(String.Format("No closing quote was found in the cell: {0}", rawEncounteredText))
+                    End If
+                End If
             End If
             Position.Increment()
             Return DenormalizeString(rawEncounteredText.ToString())

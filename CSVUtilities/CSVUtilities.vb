@@ -36,8 +36,8 @@ Namespace CSV
             If Not String.IsNullOrEmpty(content) Then
                 If content.First().Equals(""""c) Then
                     content = content.Substring(1, content.Length - 2)
+                    content = content.Replace("""""", """") 'Replace double quotes with single quotes
                 End If
-                content = content.Replace("""""", """") 'Replace double quotes with single quotes
             End If
             Return content
         End Function

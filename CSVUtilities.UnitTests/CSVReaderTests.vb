@@ -4,7 +4,11 @@ Imports Utilities.CSV
 <TestClass()>
 Public Class CSVReaderTests
 
+#If DEBUG Then
+    Private Const DEFAULT_TIMEOUT = TestTimeout.Infinite
+#Else
     Private Const DEFAULT_TIMEOUT = 2000
+#End If
 
     <TestMethod()>
     <Timeout(DEFAULT_TIMEOUT)>
@@ -214,6 +218,84 @@ g;h;i</source>.Value
             Assert.IsTrue(input.EndOfStream)
         End Using
 
+    End Sub
+
+    <TestMethod, Timeout(DEFAULT_TIMEOUT)>
+    <ExpectedException(GetType(InvalidDataException))>
+    Public Sub ReadCell_UnexpectedQuotes1()
+        Dim subject = "a""b"
+        Using mem = New MemoryStream()
+            Dim writer = New StreamWriter(mem)
+            writer.Write(subject)
+            writer.Write(DEFAULT_DELIMITER)
+            writer.Write("abc")
+            writer.Flush()
+            mem.Seek(0, SeekOrigin.Begin)
+            Dim reader = New CSVReader(mem)
+            Dim result = reader.ReadCell()
+        End Using
+    End Sub
+
+    <TestMethod, Timeout(DEFAULT_TIMEOUT)>
+    <ExpectedException(GetType(InvalidDataException))>
+    Public Sub ReadCell_UnexpectedQuotes2()
+        Dim subject = "a""""b"
+        Using mem = New MemoryStream()
+            Dim writer = New StreamWriter(mem)
+            writer.Write(subject)
+            writer.Write(DEFAULT_DELIMITER)
+            writer.Write("abc")
+            writer.Flush()
+            mem.Seek(0, SeekOrigin.Begin)
+            Dim reader = New CSVReader(mem)
+            Dim result = reader.ReadCell()
+        End Using
+    End Sub
+
+
+    <TestMethod, Timeout(DEFAULT_TIMEOUT)>
+    <ExpectedException(GetType(InvalidDataException))>
+    Public Sub ReadCell_UnexpectedQuotes3()
+        Dim subject = """"
+        Using mem = New MemoryStream()
+            Dim writer = New StreamWriter(mem)
+            writer.Write(subject)
+            writer.Write(DEFAULT_DELIMITER)
+            writer.Write("abc")
+            writer.Flush()
+            mem.Seek(0, SeekOrigin.Begin)
+            Dim reader = New CSVReader(mem)
+            reader.ReadCell()
+        End Using
+    End Sub
+
+    <TestMethod, Timeout(DEFAULT_TIMEOUT)>
+    <ExpectedException(GetType(InvalidDataException))>
+    Public Sub ReadCell_ExtraCharacters1()
+        Dim subject = """a,b""c,d"
+        Using mem = New MemoryStream()
+            Dim writer = New StreamWriter(mem)
+            writer.Write(subject)
+            writer.Flush()
+            mem.Seek(0, SeekOrigin.Begin)
+            Dim reader = New CSVReader(mem)
+            reader.ReadCell()
+        End Using
+    End Sub
+
+    <TestMethod, Timeout(DEFAULT_TIMEOUT)>
+    <ExpectedException(GetType(InvalidDataException))>
+    Public Sub ReadCell_ExtraCharacters2()
+        Dim subject = "a,b""""c,d"
+        Using mem = New MemoryStream
+            Dim writer = New StreamWriter(mem)
+            writer.Write(subject)
+            writer.Flush()
+            mem.Seek(0, SeekOrigin.Begin)
+            Dim reader = New CSVReader(mem)
+            reader.ReadCell()
+            reader.ReadCell()
+        End Using
     End Sub
 
     Private Shared ReadOnly lockObj As New Object
