@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>1.2.150113.1</version>
+    <version>1.2.150115.0</version>
     <title>$title$</title>
     <authors>marstr</authors>
     <owners>Cloud Platform Tools Telemetry Team</owners>
@@ -11,7 +11,7 @@
     <!--<iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A tool that makes easier working with CSV files. Treats CSVs as streams or as small files for keeping in memory.</description>
-    <releaseNotes>Fixing bugs that prevented correct behavior in CSVCache RemoveCell and InsertRow methods.</releaseNotes>
+    <releaseNotes>Updating ReadCell method to throw Exceptions when unexpected quotes are encountered.</releaseNotes>
     <copyright>Copyright 2014</copyright>
     <tags>CSV CPT</tags>
   </metadata>
