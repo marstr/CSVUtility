@@ -161,6 +161,8 @@ Namespace CSV
             _delimiter = delimiter
         End Sub
 #End Region
+
+        Private expectingLineFeed As Boolean = False
         ''' <summary>
         ''' Retrieves the contents of the next unread cell.
         ''' </summary>
@@ -171,38 +173,64 @@ Namespace CSV
             Dim rawEncounteredText As New StringBuilder
             Dim latest As Char
             Dim encounteredEnd = False
+            Dim first = True
+            Dim isEscaped = False
+            Dim expectingQuote = False
 
             Do
                 If EndOfStream Then
                     encounteredEnd = True
                     Exit Do
                 End If
+
                 latest = ChrW(Read())
-                rawEncounteredText.Append(latest)
-                If latest = """"c Then
-                    quoteCount += 1
+                If first AndAlso expectingLineFeed AndAlso (latest = vbLf OrElse latest = vbCr) Then
+                    expectingLineFeed = False
+                    latest = "a"c ' Assign some bogus character so that the bottom test passes
+                    Continue Do
+                Else
+                    rawEncounteredText.Append(latest)
                 End If
-            Loop While Not ((latest = Delimiter OrElse latest = ControlChars.Cr OrElse latest = ControlChars.Lf) AndAlso (quoteCount Mod 2 = 0))
+
+                If latest = """"c Then
+                    If first Then
+                        isEscaped = True
+                    ElseIf expectingQuote
+                        expectingQuote = False
+                    ElseIf Not isEscaped
+                        Throw New InvalidDataException("A quote was detected in an unescaped cell.")
+                    Else
+                        expectingQuote = True
+                    End If
+                    quoteCount += 1
+                ElseIf expectingQuote AndAlso Not IsCellDelimitingCharacter(latest)
+                    Throw New InvalidDataException("An unescaped quote was detected.")
+                End If
+
+                first = False
+            Loop While Not ((IsCellDelimitingCharacter(latest)) AndAlso (quoteCount Mod 2 = 0))
 
             If rawEncounteredText.Length > 0 Then
                 Dim lastPosition As Integer = rawEncounteredText.Length - 1
+                Dim delimiter = rawEncounteredText.Chars(lastPosition)
+                If delimiter = vbCr OrElse delimiter = vbLf Then
+                    expectingLineFeed = True
+                End If
+
                 If Not encounteredEnd Then
                     rawEncounteredText.Remove(lastPosition, 1)
                     lastPosition -= 1
                 End If
-
-                'After shortening the rawText, we must check the length again before deciding if it is valid
-                If rawEncounteredText.Length > 0 Then
-                    Dim containsQuotes = quoteCount > 0
-                    Dim allQuotesDoubled = quoteCount Mod 2 = 0
-                    Dim isEscaped = rawEncounteredText.Chars(0) = """"c AndAlso rawEncounteredText.Chars(lastPosition) = """"c
-                    If containsQuotes AndAlso (Not isEscaped OrElse Not allQuotesDoubled) Then
-                        Throw New InvalidDataException(String.Format("No closing quote was found in the cell: {0}", rawEncounteredText))
-                    End If
+                If isEscaped AndAlso (Not rawEncounteredText.Chars(lastPosition) = """"c OrElse rawEncounteredText.Length = 1) Then
+                    Throw New InvalidDataException("Missing terminal escape character.")
                 End If
             End If
             Position.Increment()
             Return DenormalizeString(rawEncounteredText.ToString())
+        End Function
+
+        Public Function IsCellDelimitingCharacter(latest As Char) As Boolean
+            Return latest = Delimiter OrElse latest = ControlChars.Cr OrElse latest = ControlChars.Lf
         End Function
 
         ''' <summary>
