@@ -117,11 +117,9 @@ Public Class HeadedCSVReaderTests
 
             Dim reader = New HeadedCSVReader(memStream)
             Assert.AreEqual(3, reader.Header.Length)
-            Dim tuple As IDictionary(Of String, String)
+            Dim tuple As IDictionary(Of String, String) = Nothing
 
-#Disable Warning BC42030
             Assert.IsTrue(reader.ReadTuple(tuple))
-#Enable Warning BC42030
         End Using
     End Sub
 
@@ -138,13 +136,11 @@ Public Class HeadedCSVReaderTests
 
             Dim reader = New HeadedCSVReader(memStream)
             Assert.AreEqual(3, reader.Header.Length)
-            Dim tuple As IDictionary(Of String, String)
+            Dim tuple As IDictionary(Of String, String) = Nothing
 
-#Disable Warning BC42030
             Assert.IsTrue(reader.ReadTuple(tuple))
             Assert.IsFalse(reader.ReadTuple(tuple))
             Assert.IsTrue(reader.ReadTuple(tuple))
-#Enable Warning BC42030
         End Using
     End Sub
 End Class
